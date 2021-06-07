@@ -13,11 +13,17 @@ extension Array {
 
 final class FillWithColor {
     
+    fileprivate var passedPixels: Set<Pair<Int, Int>> = []
+    
     func fillWithColor(_ image: [[Int]], _ row: Int, _ column: Int, _ newColor: Int) -> [[Int]] {
+        if image.isEmpty || image[safe: row]?[safe: column] == nil {
+            return image
+        }
         var vImage = image
         var pixelCandidates: Set = [Pair(first: row, second: column)]
         while !pixelCandidates.isEmpty {
             let toFillPixel = pixelCandidates.popFirst()
+            passedPixels.insert(toFillPixel!)
             let newCandidates = self.getFourConnectedSameColorPixels(vImage, toFillPixel!.first, toFillPixel!.second)
             vImage[toFillPixel!.first][toFillPixel!.second] = newColor
             pixelCandidates = pixelCandidates.union(newCandidates)
@@ -35,7 +41,7 @@ final class FillWithColor {
                 continue
             }
             if let element = image[safe: row]?[safe: column + i] {
-                if element == image[row][column] {
+                if element == image[row][column] && !passedPixels.contains(Pair(first: row, second: column + i)) {
                     pixelCandidates.insert(Pair(first: row, second: column + i))
                 }
             }
@@ -45,7 +51,7 @@ final class FillWithColor {
                 continue
             }
             if let element = image[safe: row + j]?[safe: column] {
-                if element == image[row][column] {
+                if element == image[row][column] && !passedPixels.contains(Pair(first: row + j, second: column)) {
                     pixelCandidates.insert(Pair(first: row + j, second: column))
                 }
             }
