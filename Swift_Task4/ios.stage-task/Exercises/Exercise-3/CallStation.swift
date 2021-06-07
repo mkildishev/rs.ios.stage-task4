@@ -1,10 +1,13 @@
 import Foundation
 
 final class CallStation {
-    var userStorage: Set<User> = []
-    var callStorage: Set<Call> = []
+    var userStorage: Set<User>
+    var callStorage: Set<Call> 
     
-    init() {}
+    init() {
+        userStorage = []
+        callStorage = []
+    }
 }
 
 extension CallStation: Station {
@@ -22,21 +25,15 @@ extension CallStation: Station {
     
     func execute(action: CallAction) -> CallID? {
         switch action {
+        
         case .start(let from, let to):
             let uuid = UUID()
             if !userStorage.contains(from) {
                 return nil
             }
-            if !userStorage.contains(to) {
-                callStorage.insert(Call(id: uuid, incomingUser: from, outgoingUser: to, status: .ended(reason: .error)))
-                return uuid
-            }
-            if currentCall(user: to) != nil {
-                callStorage.insert(Call(id: uuid, incomingUser: from, outgoingUser: to, status: .ended(reason: .userBusy)))
-                return uuid
-            }
-            callStorage.insert(Call(id: uuid, incomingUser: from, outgoingUser: to, status: .calling))
+            callStorage.insert(Call(id: uuid, incomingUser: from, outgoingUser: to, status: getStartStatus(user: to)))
             return uuid
+            
         case .answer(let from):
             if let currentCall = currentCall(user: from) {
                 if !userStorage.contains(from) {
@@ -46,15 +43,11 @@ extension CallStation: Station {
                 currentCall.status = .talk
                 return currentCall.id
             }
+            
         case .end(let from):
-            if let currectCall = currentCall(user: from) {
-                if (currectCall.status == .talk) {
-                    currectCall.status = .ended(reason: .end)
-                }
-                if (currectCall.status == .calling) {
-                    currectCall.status = .ended(reason: .cancel)
-                }
-                return currectCall.id
+            if let currentCall = currentCall(user: from) {
+                currentCall.status = getEndStatus(currentCall.status)!
+                return currentCall.id
             }
         }
         return nil
@@ -76,3 +69,28 @@ extension CallStation: Station {
         callStorage.first(where: {($0.incomingUser == user || $0.outgoingUser == user) && ($0.status == .calling || $0.status == .talk)})
     }
 }
+
+extension CallStation {
+    
+    func getStartStatus(user: User) -> CallStatus {
+        if !userStorage.contains(user) {
+            return .ended(reason: .error)
+        }
+        if currentCall(user: user) != nil {
+            return .ended(reason: .userBusy)
+        }
+        return .calling
+    }
+    
+    func getEndStatus(_ currentCallStatus : CallStatus) -> CallStatus? {
+        if (currentCallStatus == .talk) {
+            return .ended(reason: .end)
+        }
+        if (currentCallStatus == .calling) {
+            return .ended(reason: .cancel)
+        }
+        return nil
+    }
+        
+}
+    
