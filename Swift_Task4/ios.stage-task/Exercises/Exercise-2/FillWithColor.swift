@@ -16,6 +16,7 @@ final class FillWithColor {
     fileprivate var passedPixels: Set<Pair<Int, Int>> = []
     
     func fillWithColor(_ image: [[Int]], _ row: Int, _ column: Int, _ newColor: Int) -> [[Int]] {
+        passedPixels.removeAll()
         if image.isEmpty || image[safe: row]?[safe: column] == nil {
             return image
         }
