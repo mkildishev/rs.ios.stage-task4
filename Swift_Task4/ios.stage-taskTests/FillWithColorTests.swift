@@ -70,49 +70,4 @@ class FillWithColorTests: XCTestCase {
         newColor = 2
         XCTAssertEqual(painter.fillWithColor(image, row, column, newColor), [[2,2,2],[1,1,1],[0,0,0]])
     }
-    func test7() {
-       image = []
-       row = 0
-       column = 0
-       newColor = 2
-       XCTAssertEqual(painter.fillWithColor(image, row, column, newColor), [])
-
-       image = [[0,0,0],[1,1,1],[0,0,0]]
-       row = 3
-       column = 0
-       newColor = 2
-       XCTAssertEqual(painter.fillWithColor(image, row, column, newColor), image)
-       
-       image = [[0,0,0],[1,1,1],[0,0,0]]
-       row = 2
-       column = 3
-       newColor = 2
-       XCTAssertEqual(painter.fillWithColor(image, row, column, newColor), image)
-       
-       image = [[0,0,0],[1,1,1],[0,0,0]]
-       row = -1
-       column = 3
-       newColor = 2
-       XCTAssertEqual(painter.fillWithColor(image, row, column, newColor), image)
-       
-       image = [[0,0,0],[1,1,1],[0,0,0]]
-       row = 2
-       column = -2
-       newColor = 2
-       XCTAssertEqual(painter.fillWithColor(image, row, column, newColor), image)
-       
-       image = []
-       row = -1
-       column = -100
-       newColor = 2
-       XCTAssertEqual(painter.fillWithColor(image, row, column, newColor), image)
-   }
-
- func test8() {
-       image = [[1,1,1],[1,1,1],[1,1,1]]
-       row = 0
-       column = 0
-       newColor = 1
-       XCTAssertEqual(painter.fillWithColor(image, row, column, newColor), image)
-}
 }
